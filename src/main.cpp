@@ -59,8 +59,10 @@ int main() {
             findShortestPath();
             break;
         case 9:
+            findShortestPath2(0);
             break;
         case 10:
+            findShortestPath2(1);
             break;
         case 11:
             save();

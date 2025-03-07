@@ -31,6 +31,6 @@ void printPath(int start, int end, vector<int>& pre, int dist);
 void dijkstra(int start);
 void findShortestPath();
 void floyd(vector<vector<int>>& dist);
-void findShortestPath2();
+void findShortestPath2(int x);
 
 #endif
