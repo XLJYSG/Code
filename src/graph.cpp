@@ -169,14 +169,16 @@ void floyd(vector<vector<int>>& dist) {
         }
     }
 }
-// 记录路径
+// 还原start->end的最短路径
 void getPath(int start, int end, vector<int>& pre, vector<vector<vector<string>>>& path) {
     stack<string> s;
     int x = end;
+    // 还原路径
     while (x != start) {
         s.push(villageList[x].id);
         x = pre[x];
     }
+    // 加入path数组
     path[start][end].push_back(villageList[start].id);
     while (!s.empty()) {
         path[start][end].push_back(s.top());
@@ -210,13 +212,15 @@ void dijkstra1(int start, vector<vector<vector<string>>>& path, vector<vector<in
         }
     }
 }
-// 计算以start为起点的最小路线
+// 计算以start为起点的最短路线
+// 贪心策略，每次选择距离（这个距离已经包含了回头路）距离当前所在村庄最近的村庄，直到遍历完所有村庄
 int greedy(vector<vector<vector<string>>>& path, vector<vector<int>>& dis, int start, vector<string>& ans) {
     int n = villageList.size(), cnt = 0, sumDis = 0;
-    vector<bool> vis(n, false);
-    vis[start] = true;
+    vector<bool> vis(n, false); // 记录是否访问过
+    vis[start] = true; // 标记已访问
     while (cnt < n - 1) {
         int minDis = INT_MAX, minCnt;
+        // 选择距离当前所在村庄最近的村庄
         for (int i = 0; i < n; i++) {
             if (vis[i]) continue;
             if (dis[start][i] < minDis) {
@@ -224,70 +228,66 @@ int greedy(vector<vector<vector<string>>>& path, vector<vector<int>>& dis, int s
                 minCnt = i;
             }
         }
+        // 累加距离
         sumDis += minDis;
         cnt++;
         int n1 = path[start][minCnt].size();
         // 加入除起点外的村庄，防止起点重复
         for (int i = 1; i < n1; i++) ans.push_back(path[start][minCnt][i]);
-        start = minCnt; // 更新起点
+        start = minCnt; // 更新当前所在位置
         vis[start] = true; // 标记已访问
     }
     return sumDis;
 }
 
 
-// 不闭合回路的最短路径
-// 1. 先以每个村庄使用dijkstra算法求出所有村庄间的最短路线，将其转换成完全图，因为允许走回头路
+// 整体思路
+// 1. 先以每个村庄使用dijkstra算法求出所有村庄间的最短路线，将其转换成完全图，因为允许走回头路，把回头路抽象为一条边，
+//通过path记录还原
 // 2. 采用贪心策略，每次选择距离（这个距离已经包含了回头路）距离当前所在村庄最近的村庄，直到遍历完所有村庄
 // 3. 由于起点会影响结果，所有遍历每个村庄当起点的可能
+// 4. 需要回到源点，就在终点加上到起点的最短距离，及路线
 void findShortestPath2(int x) {
     int n = villageList.size();
+    // 并查集
     vector<int> fa(n);
     for (int i = 0; i < n; i++) fa[i] = i;
     int cnt = 0;
+    // 判断是否连通
     if (!isConnected(cnt, fa)) {
         cout << "当前村庄不联通，无法生成路线" << endl;
         return;
     }
-    // vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
-    // for (auto& x: roadList) {
-    //     int start = id2cnt[x.start], end = id2cnt[x.end];
-    //     dist[start][end] = dist[end][start] = x.length; // 放入已有距离
-    // }
     vector<vector<vector<string>>> path(n, vector<vector<string>> (n)); // 记录两点间的最短路线
     vector<vector<int>> dis(n, vector<int>(n, INT_MAX));// 记录两点间的最短距离
-    // 遍历每个村庄作为起点
+    // 遍历每个村庄作为起点，同时记录任意两村庄的最短距离，及最短距离时的路线
     for (int i = 0; i < n; i++) { 
         dijkstra1(i, path, dis);
     }
-    // for (int i = 0; i < n; i++) {
-    //     for (int j = 0; j < n; j++) {
-    //         cout << "dis[i][j]:" << dis[i][j];
-    //     }
-    // }
-    // for (int i = 0; i < n; i++) {
-    //     for (int j = 0; j < n; j++) {
-    //         cout << "path[i][j]:";
-    //         for (auto& x: path[i][j]) cout << x << " ";
-    //         cout << endl;
-    //     }
-    // }
+    // 记录最小距离及起点村庄
     int minDis = INT_MAX, minCnt, d;
-    vector<vector<string>> ans(n);
+    vector<vector<string>> ans(n); // 记录不同起点的最短路线
+    // 遍历所有村庄为起点的情况
     for (int i = 0; i < n; i++) {
         d = greedy(path, dis, i, ans[i]);
         int endCnt = id2cnt[ans[i].back()];
-        if (x == 1) d += dis[i][endCnt]; // 加上回头路
+        // 加上回头路
+        if (x == 1) {
+            d += dis[i][endCnt];
+            int n1 = path[endCnt][i].size();
+            // 加入除起点外的村庄，防止起点重复
+            for (int j = 1; j < n1; j++) ans[i].push_back(path[endCnt][i][j]);
+        } 
         if (d < minDis) {
             minDis = d;
             minCnt = i;
         }
     }
+    // 打印路线
     cout << "最短路线为：" << endl;
     cout << villageList[minCnt].id;
     for (auto& x: ans[minCnt]) {
         cout << "---->" << x;
     }
-    if (x == 1) cout << "---->" << villageList[minCnt].id; // 加上回头路
     cout << " " << minDis <<endl;
 }
