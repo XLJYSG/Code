@@ -34,9 +34,11 @@ void kruskal(vector<Road>& ans, priority_queue<Road>& pq, vector<int>& fa,int cn
 
 // 判断当前村庄是否联通
 bool isConnected(int& cnt, vector<int>& fa) {
-    int n = villageList.size();
+    int n = roadList.size();
+    //cout <<"22222" << endl;
     for (int i = 0; i < n; i++) {
         int start = id2cnt[roadList[i].start], end = id2cnt[roadList[i].end]; // 获取村庄下标
+        //cout << start << " " << end << endl;
         int faStart = find(start, fa), faEnd = find(end, fa); // 找到两个村庄所在的集合编号
         // 如果不在一个集合
         if (faStart != faEnd) {
@@ -44,7 +46,7 @@ bool isConnected(int& cnt, vector<int>& fa) {
             cnt++; // 更新关键边的数量
         }
     }
-    if (cnt < n - 1) return false;
+    if (cnt < fa.size()) return false;
     return true;
 }
 
@@ -57,6 +59,7 @@ void connectAndFind() {
     vector<int> fa(n);
     for (int i = 0; i < n; i++) fa[i] = i;
     int cnt = 0;
+    cout << "111111" << endl;
     if (isConnected(cnt, fa)) {
         cout << "当前村庄已联通，无需生成村村通方案" << endl;
         return;

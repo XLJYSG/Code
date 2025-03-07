@@ -22,7 +22,7 @@ int menu() {
     cout << "8.----查询到其它村庄的最短路线----"<<endl;
     cout << "9.----查询经过所有村庄的最短路线----"<<endl;
     cout << "10.---查询经过所有村庄并回到起点的最短路线----"<<endl;
-    cout << "11.-----退出程序----"<<endl;
+    cout << "11.-----退出程序,并保存----"<<endl;
     int select;
     cin >> select;
     return select;

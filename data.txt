@@ -5,10 +5,9 @@ C VillageC BriefC 50 60
 D VillageD BriefD 70 80
 E VillageE BriefE 90 100
 F VillageF BriefF 100 110
-6
+5
 A B 10
 B C 15
 C D 20
 D E 25
-E A 57
 E F 14

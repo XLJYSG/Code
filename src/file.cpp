@@ -7,7 +7,7 @@ extern unordered_map<string, int> id2cnt; // 村庄ID到编号的映射
 
 void restore() {
     cout << "恢复数据中..." << endl;
-    ifstream inFile("../data.txt");
+    ifstream inFile("data.txt"); // 路径应该从Makefile所在目录开始
     if (inFile.is_open()) {
         //数据恢复
         string id, name, brief, start, end;
@@ -34,13 +34,15 @@ void restore() {
 
 void save() {
     cout << "数据保存中..." << endl;
-    ofstream outFile("../data.txt");
+    ofstream outFile("data.txt");
     if (outFile.is_open()) {
         //数据保存
         // 保存村庄信息
         int n = villageList.size();
+        //cout << "村庄数量：" << n << endl;
         outFile << n << endl;
         for (int i = 0; i < n; i++) {
+            //cout << villageList[i].id << " " << villageList[i].name << " " << villageList[i].brief << " " << villageList[i].x << " " << villageList[i].y << endl;
             outFile << villageList[i].id << " " << villageList[i].name << " " << villageList[i].brief << " " << villageList[i].x << " " << villageList[i].y << endl;
         }
         // // 保存村庄ID到存储下标的映射
